@@ -1,0 +1,62 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Hugin and Munin
+ *
+ * @copyright     Copyright (c) 2023, Plenta.io
+ * @author        Plenta.io <https://plenta.io>
+ * @link          https://jobboerse-software.de
+ * @license       proprietary
+ */
+
+setlocale(\LC_ALL, 'C');
+error_reporting(-1);
+set_time_limit(0);
+
+if (function_exists('ini_set')) {
+    @ini_set('display_errors', 1);
+    @ini_set('zlib.output_compression', 0);
+
+    $memoryInBytes = function ($value) {
+        $unit = strtolower(substr($value, -1, 1));
+        $value = (int) $value;
+        switch ($unit) {
+            /* @noinspection PhpMissingBreakStatementInspection */
+            case 'g':
+                $value *= 1024;
+                /* @noinspection PhpMissingBreakStatementInspection */
+                // no break
+            case 'm':
+                $value *= 1024;
+                // no break (cumulative multiplier)
+            case 'k':
+                $value *= 1024;
+        }
+
+        return $value;
+    };
+
+    $memoryLimit = trim(ini_get('memory_limit'));
+    // Increase memory_limit if it is lower than 1.5GB
+    if (-1 != $memoryLimit && $memoryInBytes($memoryLimit) < 1024 * 1024 * 1536) {
+        @ini_set('memory_limit', '1536M');
+    }
+    // Set user defined memory limit
+    if ($memoryLimit = getenv('COMPOSER_MEMORY_LIMIT')) {
+        @ini_set('memory_limit', $memoryLimit);
+    }
+    unset($memoryInBytes, $memoryLimit);
+}
+
+putenv('COMPOSER_BINARY='.realpath($_SERVER['argv'][0]));
+
+$inputFirstArgument = $argv[1];
+
+switch ($inputFirstArgument) {
+    // This "test" command is only for the dev version, if the Phar is compiled this is done in the stub.php
+    case 'test':
+        exit(json_encode(['version' => \PHP_VERSION, 'version_id' => \PHP_VERSION_ID, 'sapi' => \PHP_SAPI]));
+        break;
+}

@@ -1,0 +1,44 @@
+{
+    "name": "plenta/hugin-munin",
+    "type": "contao-bundle",
+    "description": "Send out Hugin and Munin",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Plenta.io",
+            "homepage": "https://plenta.io"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "contao/core-bundle": "^4.13"
+    },
+    "require-dev": {
+        "contao/manager-bundle": "^4.13.1",
+        "phpunit/phpunit": "^9.5.10",
+        "contao/test-case": "^4.4.0",
+        "symfony/phpunit-bridge": "v5.3.8",
+        "friendsofphp/php-cs-fixer": "^3.2"
+    },
+    "extra": {
+        "contao-manager-plugin": "Plenta\\HuginMunin\\ContaoManager\\Plugin"
+    },
+    "autoload": {
+        "psr-4": {
+            "Plenta\\HuginMunin\\": "src/Plenta/HuginMunin"
+        }
+    },
+    "conflict": {
+        "plenta/contao-jobs-basic-bundle": "1.*"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "contao-components/installer": true,
+            "contao/manager-plugin": true,
+            "contao-community-alliance/composer-plugin": true,
+            "php-http/discovery": true
+        }
+    }
+}

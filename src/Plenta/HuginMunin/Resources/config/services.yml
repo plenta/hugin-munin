@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $projectDir: '%kernel.project_dir%'
+            $env: '%kernel.environment%'
+            $host: '%router.request_context.host%'
+            $scheme: '%router.request_context.scheme%'
+
+    Plenta\HuginMunin\:
+        resource: ../../../HuginMunin
+        exclude: ../../../HuginMunin/{Entity,Migrations,Resources}
