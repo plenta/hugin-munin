@@ -12,3 +12,6 @@ services:
     Plenta\HuginMunin\:
         resource: ../../../HuginMunin
         exclude: ../../../HuginMunin/{Entity,Migrations,Resources}
+
+    Plenta\HuginMunin\Helper\Odin:
+        public: true
