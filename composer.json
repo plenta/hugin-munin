@@ -15,7 +15,7 @@
         "contao/core-bundle": "^4.13 || ^5.1"
     },
     "require-dev": {
-        "contao/manager-bundle": "^4.13.1",
+        "contao/manager-bundle": "^4.13.1 || 5.1",
         "phpunit/phpunit": "^9.5.10",
         "contao/test-case": "^4.4.0",
         "symfony/phpunit-bridge": "v5.3.8",
