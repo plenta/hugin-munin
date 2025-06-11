@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class Odin
 {
+    protected bool $alreadyRan = false;
+    
     public function __construct(
         protected RequestStack $requestStack,
         protected PhpExecutableFinder $phpExecutableFinder,
@@ -30,37 +32,41 @@ class Odin
 
     public function sendHuginMunin(string $project, string $version): void
     {
-        $request = $this->requestStack->getMainRequest();
-        $phpBin = $this->phpExecutableFinder->getExecutable();
+        if (!$this->alreadyRan) {
+            $request = $this->requestStack->getMainRequest();
+            $phpBin = $this->phpExecutableFinder->getExecutable();
 
-        if ($request) {
-            $url = Environment::get('url').$request->getPathInfo();
-        } elseif ('localhost' !== $this->host) {
-            $url = $this->scheme.'://'.$this->host;
+            if ($request) {
+                $url = Environment::get('url').$request->getPathInfo();
+            } elseif ('localhost' !== $this->host) {
+                $url = $this->scheme.'://'.$this->host;
+            }
+            try {
+                $ip = Environment::get('server');
+            } catch (\Exception $e) {
+                $ip = gethostbyname(gethostname());
+            }
+
+            if (empty($url) || empty($ip)) {
+                return;
+            }
+
+            if (empty($phpBin)) {
+                return;
+            }
+
+            $command = escapeshellcmd($phpBin).' ';
+            $command .= escapeshellarg($this->projectDir.'/vendor/bin/contao-console').' huginmunin:heimdall ';
+            $command .= escapeshellarg($url).' ';
+            $command .= escapeshellarg($ip).' ';
+            $command .= escapeshellarg($project).' ';
+            $command .= escapeshellarg($version).' ';
+            $command .= escapeshellarg('--env='.$this->env).' ';
+            $command .= '> /dev/null 2>&1 &';
+
+            exec($command);
+            
+            $this->alreadyRan = true;
         }
-        try {
-            $ip = Environment::get('server');
-        } catch (\Exception $e) {
-            $ip = gethostbyname(gethostname());
-        }
-
-        if (empty($url) || empty($ip)) {
-            return;
-        }
-
-        if (empty($phpBin)) {
-            return;
-        }
-
-        $command = escapeshellcmd($phpBin).' ';
-        $command .= escapeshellarg($this->projectDir.'/vendor/bin/contao-console').' huginmunin:heimdall ';
-        $command .= escapeshellarg($url).' ';
-        $command .= escapeshellarg($ip).' ';
-        $command .= escapeshellarg($project).' ';
-        $command .= escapeshellarg($version).' ';
-        $command .= escapeshellarg('--env='.$this->env).' ';
-        $command .= '> /dev/null 2>&1 &';
-
-        exec($command);
     }
 }
