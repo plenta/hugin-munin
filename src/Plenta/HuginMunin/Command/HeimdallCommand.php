@@ -30,7 +30,7 @@ class HeimdallCommand extends Command
         parent::__construct();
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $type = $input->getArgument('type');
         if ($this->filesystem->exists('assets/heimdall_'.$type)) {
